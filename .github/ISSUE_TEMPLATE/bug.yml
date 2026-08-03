@@ -1,0 +1,24 @@
+name: Packaging or loading problem
+description: Report installation, dependency, or language-loading failures.
+title: "Bug: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Foundry, Runyth Order, and language-pack versions
+    validations:
+      required: true

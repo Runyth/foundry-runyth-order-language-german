@@ -1,0 +1,32 @@
+name: Translation correction
+description: Report incorrect, unclear, or overflowing German text.
+title: "Translation: "
+labels:
+  - translation
+body:
+  - type: input
+    id: key
+    attributes:
+      label: Localization key
+      description: The RO.* key, when known.
+    validations:
+      required: false
+  - type: textarea
+    id: current
+    attributes:
+      label: Current German text
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed correction and reason
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Foundry and Runyth Order versions
+      placeholder: Foundry 13.351; Runyth Order 1.0.4
+    validations:
+      required: true
