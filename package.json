@@ -1,0 +1,25 @@
+{
+  "name": "runyth-order-language-german",
+  "version": "1.0.0",
+  "private": true,
+  "description": "German Foundry VTT localization pack for Runyth Order.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0 <27"
+  },
+  "scripts": {
+    "format": "node tools/format.mjs --write",
+    "format:check": "node tools/format.mjs --check",
+    "test": "node --test test/*.test.mjs",
+    "validate": "node tools/validate.mjs",
+    "build": "node tools/build.mjs",
+    "verify:release": "node tools/verify-release.mjs",
+    "check": "npm run format:check && npm test && npm run validate && npm run build && npm run verify:release",
+    "release:verify": "node tools/verify-release.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Runyth/runyth-order-language-german.git"
+  },
+  "license": "MIT"
+}
