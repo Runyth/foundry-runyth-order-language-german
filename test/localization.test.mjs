@@ -14,7 +14,7 @@ test("manifest is a script-free German Foundry language pack", async () => {
   const manifest = await readJson("../module.json");
   assert.equal(manifest.id, "runyth-order-language-german");
   assert.equal(manifest.title, "Runyth Order: Language German");
-  assert.equal(manifest.version, "1.0.0");
+  assert.equal(manifest.version, "1.0.1");
   assert.deepEqual(manifest.languages, [
     {
       lang: "de",
@@ -27,14 +27,14 @@ test("manifest is a script-free German Foundry language pack", async () => {
   assert.equal(manifest.styles, undefined);
 });
 
-test("manifest depends exactly on Runyth Order 1.0.4", async () => {
+test("manifest supports Runyth Order 1.0.4 through 1.0.99 and verifies 1.0.5", async () => {
   const manifest = await readJson("../module.json");
   const dependency = manifest.relationships.requires.find((entry) => entry.id === "runyth-order");
   assert.ok(dependency);
   assert.deepEqual(dependency.compatibility, {
     minimum: "1.0.4",
-    verified: "1.0.4",
-    maximum: "1.0.4",
+    verified: "1.0.5",
+    maximum: "1.0.99",
   });
 });
 
@@ -47,7 +47,7 @@ test("naming and localization metadata are canonical", async () => {
   assert.deepEqual(runyth.localization, {
     schemaVersion: 1,
     targetModuleId: "runyth-order",
-    targetModuleVersion: "1.0.4",
+    targetModuleVersion: "1.0.5",
     baseLanguage: "en",
     language: "de",
     namespace: "RO",
@@ -55,7 +55,7 @@ test("naming and localization metadata are canonical", async () => {
 });
 
 test("German keys and interpolation placeholders exactly match English", async () => {
-  const en = await readJson("../reference/runyth-order-en-v1.0.4.json");
+  const en = await readJson("../reference/runyth-order-en-v1.0.5.json");
   const de = await readJson("../lang/de.json");
   assert.deepEqual(Object.keys(de).sort(), Object.keys(en).sort());
   for (const key of Object.keys(en)) {

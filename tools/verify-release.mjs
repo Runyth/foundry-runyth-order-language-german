@@ -15,7 +15,7 @@ const installEntries = await listZip(installPath);
 const sourceEntries = await listZip(sourcePath);
 const failures = [];
 
-if (report.target?.moduleId !== "runyth-order" || report.target?.moduleVersion !== "1.0.4") failures.push("Build report target is invalid.");
+if (report.target?.moduleId !== "runyth-order" || report.target?.moduleVersion !== "1.0.5") failures.push("Build report target is invalid.");
 if (report.target?.language !== "de" || report.target?.baseLanguage !== "en" || report.target?.namespace !== "RO") failures.push("Build report language contract is invalid.");
 if (report.runtimeScripts !== 0 || report.moduleSettings !== 0 || report.dashboardSelectors !== 0 || report.migrations !== 0) failures.push("Build report does not describe a data-only pack.");
 if (!installEntries.length || !sourceEntries.length) failures.push("A release archive is empty.");
@@ -27,11 +27,12 @@ for (const required of ["module.json", "lang/de.json", "README.md", "CHANGELOG.m
 for (const forbidden of ["/reference/", "/test/", "/tools/", "/docs/", "/package.json", "/package-lock.json", "/.github/"]) {
   if (installEntries.some((entry) => entry.includes(forbidden))) failures.push(`Install archive contains source-only path ${forbidden}.`);
 }
-if (!sourceEntries.includes(`${report.sourceRoot}/reference/runyth-order-en-v1.0.4.json`)) failures.push("Source archive lacks the English validation reference.");
+if (!sourceEntries.includes(`${report.sourceRoot}/reference/runyth-order-en-v1.0.5.json`)) failures.push("Source archive lacks the English validation reference.");
 if (!sourceEntries.includes(`${report.sourceRoot}/tools/build.mjs`)) failures.push("Source archive is not reproducible.");
-for (const forbidden of ["node_modules/", "dist/", ".git/"]) {
+for (const forbidden of ["node_modules/", "dist/"]) {
   if (sourceEntries.some((entry) => entry.includes(`/${forbidden}`))) failures.push(`Source archive includes ${forbidden}.`);
 }
+if (!sourceEntries.includes(`${report.sourceRoot}/.git/HEAD`)) failures.push("Source archive must include complete Git history.");
 
 const checksums = new Map(
   (await readFile(resolve(dist, report.checksumFile), "utf8"))
