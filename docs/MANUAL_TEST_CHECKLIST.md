@@ -2,7 +2,7 @@
 
 Use a disposable Foundry VTT 13.351 world.
 
-- [ ] Install Runyth Order 1.0.4 in `Data/modules/runyth-order/`.
+- [ ] Install Runyth Order 1.0.5 in `Data/modules/runyth-order/`.
 - [ ] Install this module in `Data/modules/runyth-order-language-german/`.
 - [ ] Confirm module management shows `Runyth Order: Language German`.
 - [ ] Confirm the module can be enabled only with Runyth Order active.
