@@ -55,7 +55,7 @@ const report = {
   foundry: manifest.compatibility,
   target: {
     moduleId: "runyth-order",
-    moduleVersion: "1.0.4",
+    moduleVersion: "1.0.5",
     baseLanguage: "en",
     language: "de",
     namespace: "RO",

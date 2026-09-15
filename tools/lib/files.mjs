@@ -35,8 +35,6 @@ export function isExcludedSourcePath(path) {
     path.startsWith("dist/") ||
     path === "node_modules" ||
     path.startsWith("node_modules/") ||
-    path === ".git" ||
-    path.startsWith(".git/") ||
     path.endsWith(".log") ||
     path === ".DS_Store"
   );

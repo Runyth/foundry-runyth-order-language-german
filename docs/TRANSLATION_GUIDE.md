@@ -2,7 +2,7 @@
 
 ## Source of truth
 
-Translate `reference/runyth-order-en-v1.0.4.json`. Do not derive keys from screenshots or rename keys for German grammar.
+Translate `reference/runyth-order-en-v1.0.5.json`. Do not derive keys from screenshots or rename keys for German grammar.
 
 ## Requirements
 

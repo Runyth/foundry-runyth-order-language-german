@@ -13,7 +13,7 @@ const requiredFiles = [
   "SECURITY.md",
   "CONTRIBUTING.md",
   "lang/de.json",
-  "reference/runyth-order-en-v1.0.4.json",
+  "reference/runyth-order-en-v1.0.5.json",
   "docs/ARCHITECTURE.md",
   "docs/TRANSLATION_GUIDE.md",
   "docs/COMPATIBILITY.md",
@@ -38,7 +38,7 @@ const manifest = await readJson(resolve(root, "module.json"));
 const packageJson = await readJson(resolve(root, "package.json"));
 if (manifest.id !== "runyth-order-language-german") failures.push("Manifest ID is invalid.");
 if (manifest.title !== "Runyth Order: Language German") failures.push("Manifest title is invalid.");
-if (manifest.version !== "1.0.0" || packageJson.version !== "1.0.0") failures.push("Version must be 1.0.0.");
+if (manifest.version !== "1.0.1" || packageJson.version !== "1.0.1") failures.push("Version must be 1.0.1.");
 if (manifest.compatibility?.minimum !== "13.341" || manifest.compatibility?.verified !== "13.351" || manifest.compatibility?.maximum !== "13.351") {
   failures.push("Foundry compatibility range is invalid.");
 }
@@ -50,8 +50,8 @@ for (const prohibited of ["esmodules", "scripts", "styles", "packs"]) {
 }
 const dependency = manifest.relationships?.requires?.find((entry) => entry.id === "runyth-order");
 if (!dependency || dependency.type !== "module") failures.push("Runyth Order dependency is missing.");
-if (dependency?.compatibility?.minimum !== "1.0.4" || dependency?.compatibility?.verified !== "1.0.4" || dependency?.compatibility?.maximum !== "1.0.4") {
-  failures.push("Runyth Order dependency must be exactly 1.0.4.");
+if (dependency?.compatibility?.minimum !== "1.0.4" || dependency?.compatibility?.verified !== "1.0.5" || dependency?.compatibility?.maximum !== "1.0.99") {
+  failures.push("Runyth Order dependency must support 1.0.4 through 1.0.99 and verify 1.0.5.");
 }
 const runyth = manifest.flags?.runyth;
 if (runyth?.canonicalTitle !== manifest.title || runyth?.moduleKind !== "Language" || runyth?.contentName !== "German") {
@@ -61,7 +61,7 @@ const localization = runyth?.localization;
 if (
   localization?.schemaVersion !== 1 ||
   localization?.targetModuleId !== "runyth-order" ||
-  localization?.targetModuleVersion !== "1.0.4" ||
+  localization?.targetModuleVersion !== "1.0.5" ||
   localization?.baseLanguage !== "en" ||
   localization?.language !== "de" ||
   localization?.namespace !== "RO"
@@ -85,7 +85,7 @@ for (const file of (await walk(root)).filter((entry) => extname(entry.path) === 
   }
 }
 
-const en = await readJson(resolve(root, "reference/runyth-order-en-v1.0.4.json"));
+const en = await readJson(resolve(root, "reference/runyth-order-en-v1.0.5.json"));
 const de = await readJson(resolve(root, "lang/de.json"));
 const enKeys = Object.keys(en).sort();
 const deKeys = Object.keys(de).sort();

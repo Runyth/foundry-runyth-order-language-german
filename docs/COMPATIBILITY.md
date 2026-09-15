@@ -5,7 +5,7 @@ This release is validated against:
 | Component | Version |
 |---|---|
 | Foundry VTT | 13.351 |
-| Runyth Order | 1.0.4 |
+| Runyth Order | 1.0.5 |
 | Localization namespace | `RO.*` |
 | English key count | 90 |
 | German key count | 90 |
