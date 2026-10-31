@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 Runyth. See the LICENSE file for rights and obligations.
 import { access, readFile } from "node:fs/promises";
 import { extname, resolve } from "node:path";
 import { readJson, walk } from "./lib/files.mjs";
@@ -38,7 +40,12 @@ const manifest = await readJson(resolve(root, "module.json"));
 const packageJson = await readJson(resolve(root, "package.json"));
 if (manifest.id !== "runyth-order-language-german") failures.push("Manifest ID is invalid.");
 if (manifest.title !== "Runyth Order: Language German") failures.push("Manifest title is invalid.");
-if (manifest.version !== "1.0.1" || packageJson.version !== "1.0.1") failures.push("Version must be 1.0.1.");
+if (manifest.version !== "1.0.2" || packageJson.version !== "1.0.2") failures.push("Version must be 1.0.2.");
+if (packageJson.license !== "AGPL-3.0-or-later") failures.push("Package licence must be AGPL-3.0-or-later.");
+if (manifest.flags?.runyth?.sourceCodeLicense !== "AGPL-3.0-or-later") failures.push("Manifest source licence must be AGPL-3.0-or-later.");
+if (manifest.download !== `https://github.com/Runyth/foundry-runyth-order-language-german/releases/download/v${manifest.version}/${manifest.id}-v${manifest.version}-mod.zip`) {
+  failures.push("Manifest download URL must name the -mod release archive.");
+}
 if (manifest.compatibility?.minimum !== "13.341" || manifest.compatibility?.verified !== "13.351" || manifest.compatibility?.maximum !== "13.351") {
   failures.push("Foundry compatibility range is invalid.");
 }

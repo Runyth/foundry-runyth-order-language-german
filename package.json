@@ -1,6 +1,6 @@
 {
   "name": "runyth-order-language-german",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "German Foundry VTT localization pack for Runyth Order.",
   "type": "module",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Runyth/runyth-order-language-german.git"
+    "url": "https://github.com/Runyth/foundry-runyth-order-language-german.git"
   },
-  "license": "MIT"
+  "license": "AGPL-3.0-or-later"
 }

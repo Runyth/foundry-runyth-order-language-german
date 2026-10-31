@@ -2,7 +2,7 @@
   "id": "runyth-order-language-german",
   "title": "Runyth Order: Language German",
   "description": "The independent German localization pack for Runyth Order 1.0.5, using Foundry VTT's native global language system.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "compatibility": {
     "minimum": "13.341",
     "verified": "13.351",
@@ -42,6 +42,7 @@
       "moduleKind": "Language",
       "contentName": "German",
       "canonicalTitle": "Runyth Order: Language German",
+      "sourceCodeLicense": "AGPL-3.0-or-later",
       "localization": {
         "schemaVersion": 1,
         "targetModuleId": "runyth-order",
@@ -52,9 +53,9 @@
       }
     }
   },
-  "url": "https://github.com/Runyth/runyth-order-language-german",
-  "manifest": "https://github.com/Runyth/runyth-order-language-german/releases/latest/download/module.json",
-  "download": "https://github.com/Runyth/runyth-order-language-german/releases/download/v1.0.1/runyth-order-language-german-v1.0.1.zip",
+  "url": "https://github.com/Runyth/foundry-runyth-order-language-german",
+  "manifest": "https://github.com/Runyth/foundry-runyth-order-language-german/releases/latest/download/module.json",
+  "download": "https://github.com/Runyth/foundry-runyth-order-language-german/releases/download/v1.0.2/runyth-order-language-german-v1.0.2-mod.zip",
   "license": "LICENSE",
   "readme": "README.md",
   "changelog": "CHANGELOG.md"
