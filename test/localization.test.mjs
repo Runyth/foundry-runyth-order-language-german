@@ -14,7 +14,7 @@ test("manifest is a script-free German Foundry language pack", async () => {
   const manifest = await readJson("../module.json");
   assert.equal(manifest.id, "runyth-order-language-german");
   assert.equal(manifest.title, "Runyth Order: Language German");
-  assert.equal(manifest.version, "1.0.1");
+  assert.equal(manifest.version, "1.0.2");
   assert.deepEqual(manifest.languages, [
     {
       lang: "de",

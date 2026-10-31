@@ -16,7 +16,7 @@ This package uses Foundry VTT's native localization system. It contains no runti
 ## Installation
 
 1. Install and enable **Runyth Order 1.0.5**.
-2. Extract `runyth-order-language-german-v1.0.1.zip` into `FoundryVTT/Data/modules/`.
+2. Extract `runyth-order-language-german-v1.0.2-mod.zip` into `FoundryVTT/Data/modules/`.
 3. Enable **Runyth Order: Language German** in the world.
 4. Open Foundry's **Configure Settings** interface and select German through the global Language setting.
 5. Save changes and reload when Foundry requests it.
@@ -44,10 +44,11 @@ npm run check
 
 Build output:
 
-- `runyth-order-language-german-v1.0.1.zip`
-- `runyth-order-language-german-source-v1.0.1.zip`
-- `runyth-order-language-german-v1.0.1-SHA256SUMS.txt`
-- `runyth-order-language-german-v1.0.1-build-report.json`
+- `runyth-order-language-german-v1.0.2-mod.zip`
+- `runyth-order-language-german-v1.0.2-src.zip`
+- `runyth-order-language-german-v1.0.2-doc.zip`
+- `runyth-order-language-german-v1.0.2-SHA256SUMS.txt`
+- `runyth-order-language-german-v1.0.2-build-report.json`
 
 ## Default branch
 
