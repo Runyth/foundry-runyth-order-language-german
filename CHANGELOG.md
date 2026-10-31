@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2 — 2026-10-31
+
+- Renamed the release archives to `runyth-order-language-german-v1.0.2-mod.zip`, `-src.zip`, and `-doc.zip`.
+- Pointed the Foundry download URL at the `-mod` archive.
+- Pointed the public repository at `foundry-runyth-order-language-german`.
+- Release checkouts no longer persist GitHub Actions credentials.
+
 ## 1.0.1 — 2026-09-15
 
 - Extended the Runyth Order dependency range to `1.0.4`–`1.0.99` and verified the pack against Runyth Order 1.0.5.

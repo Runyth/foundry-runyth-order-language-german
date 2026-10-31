@@ -11,6 +11,7 @@ const manifest = await readJson(resolve(root, "module.json"));
 const report = await readJson(resolve(dist, `${manifest.id}-v${manifest.version}-build-report.json`));
 const installPath = resolve(dist, report.installArchive);
 const sourcePath = resolve(dist, report.sourceArchive);
+const docPath = resolve(dist, report.documentationArchive);
 const installEntries = await listZip(installPath);
 const sourceEntries = await listZip(sourcePath);
 const failures = [];
@@ -48,14 +49,17 @@ async function digest(path) {
 }
 if ((await digest(installPath)) !== checksums.get(report.installArchive)) failures.push("Install checksum mismatch.");
 if ((await digest(sourcePath)) !== checksums.get(report.sourceArchive)) failures.push("Source checksum mismatch.");
+if ((await digest(docPath)) !== checksums.get(report.documentationArchive)) failures.push("Documentation checksum mismatch.");
 
 const firstInstall = await readFile(installPath);
 const firstSource = await readFile(sourcePath);
+const firstDoc = await readFile(docPath);
 const result = spawnSync(process.execPath, [resolve(root, "tools/build.mjs")], { cwd: root, encoding: "utf8" });
 if (result.status !== 0) failures.push(`Repeated build failed: ${result.stderr}`);
 else {
   if (!firstInstall.equals(await readFile(installPath))) failures.push("Install archive is not byte-reproducible.");
   if (!firstSource.equals(await readFile(sourcePath))) failures.push("Source archive is not byte-reproducible.");
+  if (!firstDoc.equals(await readFile(docPath))) failures.push("Documentation archive is not byte-reproducible.");
 }
 
 if (failures.length) {
