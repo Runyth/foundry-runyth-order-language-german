@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3 - 2026-11-01
+
+### Fixed
+
+- Attributed the source licence headers to the same holder the README Licence chapter names so every module surface carries the same copyright holder.
+
 ## 1.0.2 — 2026-10-31
 
 - Licensed the source code under AGPL-3.0-or-later.

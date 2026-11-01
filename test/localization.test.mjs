@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-// Copyright (C) 2026 Runyth. See the LICENSE file for rights and obligations.
+// Copyright (C) 2026 Daniel Braniewski. See the LICENSE file for rights and obligations.
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
@@ -16,7 +16,7 @@ test("manifest is a script-free German Foundry language pack", async () => {
   const manifest = await readJson("../module.json");
   assert.equal(manifest.id, "runyth-order-language-german");
   assert.equal(manifest.title, "Runyth Order: Language German");
-  assert.equal(manifest.version, "1.0.2");
+  assert.equal(manifest.version, "1.0.3");
   assert.deepEqual(manifest.languages, [
     {
       lang: "de",
