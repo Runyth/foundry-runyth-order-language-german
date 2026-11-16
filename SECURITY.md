@@ -1,5 +1,11 @@
-# Security
+# Security policy
 
-This module contains no executable runtime code. Report packaging, manifest, or translation-integrity problems privately to the repository maintainer before public disclosure when they could affect release artifacts.
+Report vulnerabilities privately through GitHub's private vulnerability
+reporting for the repository. Do not disclose unreleased exploit details in a
+public issue.
 
-Do not include world data, access tokens, licence keys, or personal information in reports.
+Supported releases are the newest minor release and the latest patch of the
+previous minor release unless a module documents a stricter policy.
+
+Security-sensitive changes must preserve least privilege, avoid logging secret
+or hidden content, validate imported data, and avoid private Foundry internals.

@@ -1,123 +1,90 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 Daniel Braniewski. See the LICENSE file for rights and obligations.
-import { access, readFile } from "node:fs/promises";
-import { extname, resolve } from "node:path";
-import { readJson, walk } from "./lib/files.mjs";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { PROJECT_ROOT, pathExists, readJson, walkFiles } from "./lib/project.mjs";
+import { flattenJson } from "./lib/text.mjs";
+import { matchesAny } from "./lib/glob.mjs";
 
-const root = resolve(import.meta.dirname, "..");
-const failures = [];
-const requiredFiles = [
-  "module.json",
-  "README.md",
-  "CHANGELOG.md",
-  "LICENSE",
-  "NOTICE.md",
-  "SECURITY.md",
-  "CONTRIBUTING.md",
-  "lang/de.json",
-  "reference/runyth-order-en-v1.0.5.json",
-  "docs/ARCHITECTURE.md",
-  "docs/TRANSLATION_GUIDE.md",
-  "docs/COMPATIBILITY.md",
-  "docs/MANUAL_TEST_CHECKLIST.md",
-  "docs/RELEASE.md",
-  "test/localization.test.mjs",
-  "tools/build.mjs",
-  "tools/format.mjs",
-  "tools/validate.mjs",
-  "tools/verify-release.mjs",
-];
+const errors = [];
+const warnings = [];
+const config = await readJson("runyth.config.json");
+const manifest = await readJson("module.json");
+const packageJson = await readJson("package.json");
 
-for (const path of requiredFiles) {
-  try {
-    await access(resolve(root, path));
-  } catch {
-    failures.push(`Missing required file: ${path}`);
+function requireCondition(condition, message) {
+  if (!condition) errors.push(message);
+}
+
+requireCondition(config.schemaVersion === 1, "runyth.config.json schemaVersion must be 1.");
+requireCondition(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(manifest.id ?? ""), "module.json id must be lowercase kebab-case.");
+requireCondition(typeof manifest.title === "string" && manifest.title.length > 0, "module.json title is required.");
+requireCondition(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u.test(manifest.version ?? ""), "module.json version must be semantic.");
+requireCondition(manifest.compatibility?.minimum !== undefined, "Foundry compatibility.minimum is required.");
+requireCondition(manifest.compatibility?.verified !== undefined, "Foundry compatibility.verified is required.");
+requireCondition(packageJson.type === "module", "package.json type must be module.");
+if (config.validation.requireVersionParity) {
+  requireCondition(packageJson.version === manifest.version, "package.json and module.json versions differ.");
+}
+if (!config.template.source && config.validation.requireRepositoryUrls) {
+  const expectedRepository = `https://github.com/${config.module.repository}`;
+  requireCondition(manifest.url === expectedRepository, `module.json url must be ${expectedRepository}.`);
+  requireCondition(manifest.manifest?.startsWith(`${expectedRepository}/releases/`), "module.json manifest URL must use GitHub Releases.");
+  requireCondition(manifest.download?.includes(`/v${manifest.version}/`), "module.json download URL must contain the current version tag.");
+}
+
+const referencedPaths = new Set();
+for (const field of ["esmodules", "scripts", "styles"]) {
+  for (const value of manifest[field] ?? []) referencedPaths.add(value);
+}
+for (const language of manifest.languages ?? []) referencedPaths.add(language.path);
+for (const pack of manifest.packs ?? []) if (pack.path) referencedPaths.add(pack.path);
+for (const relativePath of referencedPaths) {
+  requireCondition(await pathExists(path.join(PROJECT_ROOT, relativePath)), `Manifest path does not exist: ${relativePath}`);
+}
+
+const languages = new Map((manifest.languages ?? []).map((entry) => [entry.lang, entry.path]));
+for (const locale of config.validation.requiredLocales ?? []) {
+  requireCondition(languages.has(locale), `Required locale is absent from module.json: ${locale}`);
+}
+if (config.validation.requireLocaleParity && languages.size > 1) {
+  const localeKeys = [];
+  for (const [locale, relativePath] of [...languages.entries()].sort()) {
+    const document = JSON.parse(await readFile(path.join(PROJECT_ROOT, relativePath), "utf8"));
+    localeKeys.push([locale, new Set(flattenJson(document).keys())]);
+  }
+  const [baseLocale, baseKeys] = localeKeys[0];
+  for (const [locale, keys] of localeKeys.slice(1)) {
+    const missing = [...baseKeys].filter((key) => !keys.has(key));
+    const extra = [...keys].filter((key) => !baseKeys.has(key));
+    if (missing.length || extra.length) errors.push(`Localization parity mismatch ${baseLocale}/${locale}: missing=[${missing.join(", ")}], extra=[${extra.join(", ")}].`);
   }
 }
 
-const manifest = await readJson(resolve(root, "module.json"));
-const packageJson = await readJson(resolve(root, "package.json"));
-if (manifest.id !== "runyth-order-language-german") failures.push("Manifest ID is invalid.");
-if (manifest.title !== "Runyth Order: Language German") failures.push("Manifest title is invalid.");
-if (manifest.version !== "1.0.3" || packageJson.version !== "1.0.3") failures.push("Version must be 1.0.3.");
-if (packageJson.license !== "AGPL-3.0-or-later") failures.push("Package licence must be AGPL-3.0-or-later.");
-if (manifest.flags?.runyth?.sourceCodeLicense !== "AGPL-3.0-or-later") failures.push("Manifest source licence must be AGPL-3.0-or-later.");
-if (manifest.download !== `https://github.com/Runyth/foundry-runyth-order-language-german/releases/download/v${manifest.version}/${manifest.id}-v${manifest.version}-mod.zip`) {
-  failures.push("Manifest download URL must name the -mod release archive.");
-}
-if (manifest.compatibility?.minimum !== "13.341" || manifest.compatibility?.verified !== "13.351" || manifest.compatibility?.maximum !== "13.351") {
-  failures.push("Foundry compatibility range is invalid.");
-}
-if (JSON.stringify(manifest.languages) !== JSON.stringify([{ lang: "de", name: "Deutsch — Runyth Order", path: "lang/de.json" }])) {
-  failures.push("Manifest must declare exactly the German dictionary.");
-}
-for (const prohibited of ["esmodules", "scripts", "styles", "packs"]) {
-  if (manifest[prohibited] !== undefined) failures.push(`Translation-only manifest must not declare ${prohibited}.`);
-}
-const dependency = manifest.relationships?.requires?.find((entry) => entry.id === "runyth-order");
-if (!dependency || dependency.type !== "module") failures.push("Runyth Order dependency is missing.");
-if (dependency?.compatibility?.minimum !== "1.0.4" || dependency?.compatibility?.verified !== "1.0.5" || dependency?.compatibility?.maximum !== "1.0.99") {
-  failures.push("Runyth Order dependency must support 1.0.4 through 1.0.99 and verify 1.0.5.");
-}
-const runyth = manifest.flags?.runyth;
-if (runyth?.canonicalTitle !== manifest.title || runyth?.moduleKind !== "Language" || runyth?.contentName !== "German") {
-  failures.push("Runyth naming metadata is invalid.");
-}
-const localization = runyth?.localization;
-if (
-  localization?.schemaVersion !== 1 ||
-  localization?.targetModuleId !== "runyth-order" ||
-  localization?.targetModuleVersion !== "1.0.5" ||
-  localization?.baseLanguage !== "en" ||
-  localization?.language !== "de" ||
-  localization?.namespace !== "RO"
-) {
-  failures.push("Localization metadata is invalid.");
-}
-
-for (const entry of manifest.languages ?? []) {
-  try {
-    await access(resolve(root, entry.path));
-  } catch {
-    failures.push(`Manifest language path does not exist: ${entry.path}`);
+const files = await walkFiles(PROJECT_ROOT);
+const scriptFiles = files.filter((file) => matchesAny(file, ["**/*.js", "**/*.mjs"]) && !matchesAny(file, ["dist/**", "node_modules/**"]));
+const importPattern = /(?:import|export)\s+(?:[^"']*?\s+from\s+)?["'](\.{1,2}\/[^"']+)["']/gu;
+for (const relativePath of scriptFiles) {
+  const source = await readFile(path.join(PROJECT_ROOT, relativePath), "utf8");
+  for (const match of source.matchAll(importPattern)) {
+    const candidate = path.resolve(PROJECT_ROOT, path.dirname(relativePath), match[1]);
+    const possibilities = [candidate, `${candidate}.js`, `${candidate}.mjs`, path.join(candidate, "index.js")];
+    if (!(await Promise.all(possibilities.map(pathExists))).some(Boolean)) {
+      errors.push(`Unresolved relative import in ${relativePath}: ${match[1]}`);
+    }
   }
 }
 
-for (const file of (await walk(root)).filter((entry) => extname(entry.path) === ".json" && !entry.path.startsWith("dist/"))) {
-  try {
-    JSON.parse(await readFile(file.absolute, "utf8"));
-  } catch (error) {
-    failures.push(`${file.path}: invalid JSON: ${error.message}`);
+if (!config.template.source) {
+  const placeholderPattern = /runyth[-_ ]module[-_ ]template/giu;
+  for (const relativePath of files.filter((file) => matchesAny(file, ["module.json", "package.json", "scripts/**/*.js", "lang/*.json"]))) {
+    const content = await readFile(path.join(PROJECT_ROOT, relativePath), "utf8");
+    if (placeholderPattern.test(content)) errors.push(`Template identity remains in ${relativePath}. Run npm run bootstrap.`);
+    placeholderPattern.lastIndex = 0;
   }
 }
 
-const en = await readJson(resolve(root, "reference/runyth-order-en-v1.0.5.json"));
-const de = await readJson(resolve(root, "lang/de.json"));
-const enKeys = Object.keys(en).sort();
-const deKeys = Object.keys(de).sort();
-if (JSON.stringify(enKeys) !== JSON.stringify(deKeys)) failures.push("German and English localization keys differ.");
-function placeholders(value) {
-  return [...value.matchAll(/\{([A-Za-z][A-Za-z0-9]*)\}/gu)].map((match) => match[1]).sort();
-}
-for (const key of enKeys) {
-  if (!key.startsWith("RO.")) failures.push(`Unexpected localization namespace: ${key}`);
-  if (typeof de[key] !== "string" || !de[key].trim()) failures.push(`Missing German translation: ${key}`);
-  if (JSON.stringify(placeholders(en[key])) !== JSON.stringify(placeholders(de[key]))) {
-    failures.push(`Interpolation placeholders differ: ${key}`);
-  }
-}
-
-const allPaths = (await walk(root)).map((entry) => entry.path);
-if (allPaths.some((path) => path.startsWith("src/") || path.startsWith("templates/") || path.startsWith("styles/"))) {
-  failures.push("Translation-only source must not contain runtime source, templates, or styles.");
-}
-const quality = await readFile(resolve(root, ".github/workflows/quality.yml"), "utf8");
-if (!quality.includes("- master") || quality.includes("- main")) failures.push("Quality workflow must target master only.");
-
-if (failures.length) {
-  failures.forEach((failure) => console.error(`- ${failure}`));
-  process.exitCode = 1;
-} else {
-  console.log(`Validation passed: ${requiredFiles.length} required files and ${deKeys.length} German localization keys.`);
-}
+for (const warning of warnings) console.warn(`Warning: ${warning}`);
+for (const error of errors) console.error(`Error: ${error}`);
+if (errors.length > 0) process.exitCode = 1;
+else console.log(`Validation passed: ${files.length} repository files, ${scriptFiles.length} JavaScript modules.`);

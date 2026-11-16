@@ -1,13 +1,26 @@
-name: Packaging or loading problem
-description: Report installation, dependency, or language-loading failures.
+name: Bug report
+description: Report a reproducible module defect.
 title: "Bug: "
 labels:
   - bug
 body:
   - type: textarea
-    id: problem
+    id: summary
     attributes:
-      label: Problem
+      label: Defect
+      description: Describe what happened and what you expected.
+    validations:
+      required: true
+  - type: input
+    id: module-version
+    attributes:
+      label: Module version
+    validations:
+      required: true
+  - type: input
+    id: foundry-version
+    attributes:
+      label: Foundry VTT version
     validations:
       required: true
   - type: textarea
@@ -16,9 +29,8 @@ body:
       label: Reproduction steps
     validations:
       required: true
-  - type: input
-    id: versions
+  - type: textarea
+    id: logs
     attributes:
-      label: Foundry, Runyth Order, and language-pack versions
-    validations:
-      required: true
+      label: Relevant logs
+      description: Remove secrets and protected campaign content.

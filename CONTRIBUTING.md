@@ -1,9 +1,11 @@
 # Contributing
 
-- Use `master` as the default branch.
-- Preserve every `RO.*` key from the target English reference.
-- Preserve interpolation placeholders exactly.
-- Keep the module translation-only; do not add runtime scripts or a custom language selector.
-- Use clear idiomatic German while retaining the mechanical meaning of the English source.
-- Update compatibility metadata, reference snapshot, tests, documentation, and changelog together.
-- Run `npm ci --ignore-scripts` and `npm run check` before submitting changes.
+1. Add or update tests with the change.
+2. Run `npm run check`.
+3. Document compatibility or migration impact.
+4. Commit directly to the default branch. Pull requests are disabled across the
+   Runyth organization; open an issue for bug reports and feature requests.
+5. Sign the commit with the Runyth maintainer key.
+
+Do not commit generated `dist/` assets, local Foundry data, credentials, or
+copyrighted third-party material without a verified redistribution right.
